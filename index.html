@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Google Generative AI</title>
+        <style>
+            body {
+                font-family: sans-serif;
+            }
+            #content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            #content > div {
+                width: 60%;
+                margin: 1em;
+                padding: 1em;
+                border: 1px solid black;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            }
+            .hidden {
+                display: none;
+            }
+            #select-employee {
+                /* put this at top left */
+                position: fixed;
+                top: 0;
+                left: 0;
+                margin: 1em;
+                padding: 1em;
+                border: 1px solid black;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            }
+            #select-newsletter {
+                padding: 1em;
+                border: 1px solid black;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            }
+            #submit-button {
+                padding: 1em;
+                border: 1px solid black;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            }
+            #submit-button:disabled {
+                cursor: not-allowed;
+            }
+            #ul-out {
+                margin: auto 0em;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ... Your HTML and CSS -->
+        <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+        </script>
+        <select id="select-employee" onclick="selectEmployee();">
+            <option value="Account Manager" selected>Account Manager</option>
+            <option value="Account Executive">Account Executive</option>
+            <option value="Sales Manager">Sales Manager</option>
+        </select>
+        <div id="content">
+            <div id="submit" class="">
+                <h3>Submit Newsletter</h3>
+                <p>Choose a newsletter to summarize for each position!</p>
+                <p>How to use this:</p>
+                <ol>
+                    <li>Choose a newsletter from the below select menu</li>
+                    <li>Click the "Submit" button</li>
+                    <li>Choose a position from the top left select menu</li>
+                    <li>View the summary for that position, in every region</li>
+                </ol>
+                <select id="select-newsletter">
+                    <option value="More effective media buying on apps | May 01, 2023" selected>More effective media buying on apps | May 01, 2023</option>
+                    <option value="Introducing new AI-powered ad solutions to drive demand | Jun 14, 2023">Introducing new AI-powered ad solutions to drive demand | Jun 14, 2023</option>
+                    <option value="Why your brand's ads need more views from YouTube | Nov 08, 2023">Why your brand's ads need more views from YouTube | Nov 08, 2023</option>
+                </select>
+                <button id="submit-button">Submit</button>
+            </div>
+            <div id="Account Manager North America" class="hidden">
+                <h3>Account Manager North America</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Manager Europe" class="hidden">
+                <h3>Account Manager Europe</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Manager Asia" class="hidden">
+                <h3>Account Manager Asia</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Manager South America" class="hidden">
+                <h3>Account Manager South America</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Manager Africa" class="hidden">
+                <h3>Account Manager Africa</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Manager Australia" class="hidden">
+                <h3>Account Manager Australia</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Executive North America" class="hidden">
+                <h3>Account Executive North America</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Executive Europe" class="hidden">
+                <h3>Account Executive Europe</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Executive Asia" class="hidden">
+                <h3>Account Executive Asia</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Executive South America" class="hidden">
+                <h3>Account Executive South America</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Executive Africa" class="hidden">
+                <h3>Account Executive Africa</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Account Executive Australia" class="hidden">
+                <h3>Account Executive Australia</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Sales Manager North America" class="hidden">
+                <h3>Sales Manager North America</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Sales Manager Europe" class="hidden">
+                <h3>Sales Manager Europe</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Sales Manager Asia" class="hidden">
+                <h3>Sales Manager Asia</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Sales Manager South America" class="hidden">
+                <h3>Sales Manager South America</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Sales Manager Africa" class="hidden">
+                <h3>Sales Manager Africa</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+            <div id="Sales Manager Australia" class="hidden">
+                <h3>Sales Manager Australia</h3>
+                <p>Select a newsletter to generate outputs from Gemini.</p>
+            </div>
+        </div>
+        <script>
+            function selectEmployee() {
+                let value = document.getElementById("select-employee").value;
+                let cards = [...document.getElementById("content").children];
+                    cards.forEach(card => {
+                        if (!card.id.startsWith(value)) {
+                            card.classList.add("hidden");
+                        } else {
+                            card.classList.remove("hidden");
+                        }
+                    });
+                document.getElementById("submit").classList.remove("hidden");
+            }
+            selectEmployee();
+        </script>
+        <script type="module">
+      import { GoogleGenerativeAI } from "@google/generative-ai";
+
+      // Fetch your API_KEY
+      const API_KEY = "...";
+
+      // Access your API key (see "Set up your API key" above)
+      const genAI = new GoogleGenerativeAI(API_KEY);
+
+      async function run() {
+        // disable the button while we're running
+        document.getElementById("submit-button").disabled = true;
+
+        // For text-only input, use the gemini-pro model
+        const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+
+        const web_texts = {
+            "More effective media buying on apps | May 01, 2023": `Ads & Commerce Blog 
+            More effective media buying on apps 
+           Share 
+           Twitter 
+           Facebook 
+           LinkedIn 
+           Mail 
+           Copy link 
+           Google Ads
+           MORE EFFECTIVE MEDIA BUYING ON APPS
+           May 01, 2023
+           min read
+           Share 
+           Twitter 
+           Facebook 
+           LinkedIn 
+           Mail 
+           Copy link 
+           Opening real-time bidding integrations to more app developers and
+           changing how we buy media on apps.
+           David Mitby 
+            Director, Product Management, App Ads 
+           Share 
+           Twitter 
+           Facebook 
+           LinkedIn 
+           Mail 
+           Copy link 
+             Illustration showing a mobile ad and icons highlighting the
+           improvements to media buying  
+           For years, Google Ads has been working to simplify media buying for
+           partners. This includes helping advertisers be more competitive and
+           getting the best value for inventory when reaching new audiences in
+           apps. As another step toward making media buying more efficient,
+           Google Ads intends to move primarily to real-time bidding auctions for
+           apps and will no longer respond to multiple calls in mediation on Oct
+           31, 2023.
+           Before this date, Google Ads may begin to transition away from
+           waterfall buying for some multi-call requests. Shifting to real-time
+           bidding will help advertisers to find the best-priced app inventory in
+           a more efficient manner and increase competition within the real-time
+           auction.
+           While it's a common practice for app developers using waterfall
+           mediation, making multiple calls for the same ad impression is not
+           optimal for advertiser performance. With real-time bidding, prices
+           from all buyers are compared simultaneously, ensuring an efficient
+           auction such that the highest offer for the ad impression wins.
+           IMPROVE REACH WITH THIRD-PARTY APP MONETIZATION PLATFORMS
+           To continue providing advertisers with more access to quality app
+           inventory in real-time, we're expanding Google Ads and Display &
+           Video 360 real-time bidding integrations with select third-party app
+           monetization platforms. These integrations are now moving to an open
+           beta and will be available to all app developers using AppLovin (MAX),
+           Chartboost Mediation, Digital Turbine FairBid, and Unity LevelPlay
+           monetization platforms.
+           Over the last few months, we've monitored the results of real-time
+           bidding with our Google bidding program. Participating advertiser
+           campaigns have reached more users across platforms. Meanwhile, app
+           developers who added Google into their bidding strategy have typically
+           benefited by reducing overall mediation management overhead, improving
+           ad ops efficiencies and increasing competition for their inventory. On
+           average, we've seen a positive impact on publisher performance.
+           Advertisers will not need to make changes to their campaigns to
+           benefit from this program. Within the next week, the option to enable
+           Google bidding will roll out to all app developers using supported
+           third-party monetization platforms. App developers can also access
+           Google's demand via real-time bidding integrations with AdMob and
+           Ad Manager publisher offerings.
+           We will continue innovating to drive better results for advertisers
+           through increased access to inventory from app developer partners.
+           It's all part of our commitment to offer effective solutions that
+           enable a healthy ad-supported internet that's safer for users and
+           stronger for businesses.
+            POSTED IN: 
+                 Google Ads`,
+            "Introducing new AI-powered ad solutions to drive demand | Jun 14, 2023": `Ads & Commerce Blog 
+            Introducing new AI-powered ad solutions to drive demand 
+
+           Google Ads
+           INTRODUCING NEW AI-POWERED AD SOLUTIONS TO DRIVE DEMAND
+           Jun 14, 2023
+
+           Google and YouTube's new AI-powered solutions help advertisers
+           multiply their creativity and generate demand.
+             Vidhya 2.jpg  
+           Vidhya Srinivasan 
+            VP & GM in Google Ads (Search Ads & Ads on Google Experiences) 
+
+             Illustration of consumer behaviors across devices and screens.  
+           Google AI powers so much of what people love about YouTube: content
+           recommendations, accessibility, user experience and more. As we shared
+           at Google Marketing Live, it also powers the ads solutions that help
+           you run your business.
+           Today we're announcing two new Google AI-powered campaigns, Demand
+           Gen and Video View campaigns. They make it easier to connect with
+           consumers and drive demand from the mid-funnel, all the way to
+           purchase. Research already shows that 87% of consumers say YouTube
+           helps them make purchase decisions faster.1 These ad solutions use
+           relevant, immersive creatives to drive action and conversions in the
+           moments that matter.
+           DRIVE ACTION ACROSS YOUTUBE & GOOGLE WITH DEMAND GEN CAMPAIGNS
+           Demand Gen campaigns offer a set of unique features designed
+           especially for the needs of today's social marketer. Research shows
+           that 91% of consumers took action immediately after discovering new
+           products or brands on Google feeds, like Discover or Gmail.2 With
+           Demand Gen, your best-performing video and image assets are integrated
+           across our most visual, entertainment-focused touchpoints — YouTube,
+           YouTube Shorts, Discover and Gmail. These products reach over 3
+           billion monthly users as they stream, scroll and connect.3
+             A gif showing Demand Gen ads on mobile devices: video across YouTube
+           Shorts and in-stream, a carousel ad in-feed and static ads on Discover
+           and Gmail.  
+           With Demand Gen's all new construction flow, we're making it
+           easier than ever to bring your top-performing image and video assets
+           into Google Ads and preview how they'll look before they run.
+             A gif showing creative previews across multiple placements in Google
+           Ads.  
+           EXPAND BEYOND EXISTING CUSTOMERS WITH LOOKALIKE SEGMENTS
+           You can make these campaigns even smarter and more relevant by pairing
+           tailored creatives with brand-new lookalike segments based on your
+           audience lists.
+             A gif showing the user experience of creating lookalike audiences in
+           Google Ads.  
+           By optimizing for conversions, as well as Maximize clicks bidding, you
+           can create deeply relevant campaigns based on your goals that spur the
+           right action at the right moment. For instance, you might choose to
+           drive conversions with existing customers by offering them a discount
+           on a new product line. Or, you could generate demand by driving new
+           lookalike audiences to your site with a special offer to join your
+           brand's subscription program.
+           We're excited to see early alpha testers, such as Arcane, are
+           already seeing success with Demand Gen.
+             Pull quote from Anselme Langle at Arcane about Demand Gen campaign
+           set up being seamless, efficient and effective  
+           Sign up to join our beta in August.
+           MAXIMIZE VIEWS EFFICIENTLY USING VIDEO VIEW CAMPAIGNS, POWERED BY
+           GOOGLE AI
+           With Video View campaigns, brands can maximize views across in-stream,
+           in-feed and now YouTube Shorts, all within a single campaign. In early
+           testing, Video View campaigns have achieved an average of 40% more
+           views compared to in-stream skippable cost-per-view campaigns.4
+           Samsung Germany wanted to engage its target Gen Z audience during the
+           peak holiday season. With Video View campaigns, Samsung was able to
+           significantly increase views and achieve 94% incremental reach, all
+           while reducing CPMs and generating best-in-class consideration lift.
+             Pull quote from Laura Thissen at Samsung about how she used Video
+           View campaigns to reach Gen Z during the holiday season.  
+           Reach out to your account team to join our upcoming beta.
+           MEASURE RESULTS WITH AI-POWERED INSIGHTS
+           Marketers today are being asked to do more with less. Multiple macro
+           challenges — from inflation pressures to supply chain constraints
+           — are forcing tougher decisions for every business and marketing
+           decision-maker. These new AI-driven solutions allow you to measure the
+           incremental impact of your campaigns with brand lift, search lift and
+           data driven attribution, helping you to make smarter decisions more
+           effectively.
+           We look forward to partnering with the industry, and marketers, on
+           these solutions as we roll them out more broadly later this year.
+            POSTED IN: 
+                 Google Ads 
+                 AI 
+                 YouTube 
+                 Ads 
+            Read Article 
+                       -
+           More Information
+                       -
+            1 
+           _Google/Talk Shoppe, U.S Shopping at the Speed of Culture 2021 study,
+           n=2,000 A18–64 gen. pop. video users, Aug. 2021._
+            2 
+           _Google/Ipsos, Consumer Feed Behavior Research, August 2022, Online
+           survey, US consumers aged 18+ who browse Google feeds (Google feeds
+           defined as: Google, Chrome, YouTube and Gmail) at least once a month
+           and discovered new products or brands on Google feeds. Base: Consumers
+           n=1,263_
+            3 
+           _Internal Google Data, July 2020_
+            4 
+           _Source: Google Internal Data, Global,Jan-Feb 2023_`,
+           "Why your brand's ads need more views from YouTube | Nov 08, 2023": `Ads & Commerce Blog 
+           Why your brand's ads need more views from YouTube 
+
+          Google Ads
+          WHY YOUR BRAND'S ADS NEED MORE VIEWS FROM YOUTUBE
+          Nov 08, 2023
+ 
+          YouTube's views are a strong indicator of brand consideration and
+          essential to standing out in today's marketplace
+            Ammar Ibrahim  
+          Ammar Ibrahim 
+           Director of Product Management, YouTube Ads 
+
+            There are four people all engaging with YouTube on mobile devices,
+          with thought bubbles rising from each of them. In the background there
+          is a red and grey design.  
+          On YouTube, views are more than just glances. They are currency for a
+          brand's consideration. Why? Because views are an indication of a
+          customer's interest in your brand or product, a critical component
+          of business growth. Amongst skippable ad formats, the cost-per-view
+          (CPV) bidding strategy has seen the highest lift in consideration,
+          which is an indicator of a customer's interest1. Every day on
+          YouTube, people watch billions of hours of video and generate billions
+          of views2.
+          Thirteen years ago, YouTube introduced the concept of skippable ads to
+          bring the same power of choice that viewers enjoy for their content to
+          ads. It offered a tangible measurement of consideration to
+          advertisers, who were billed on a cost-per-view (CPV) basis, when
+          viewers watched ads for 30 seconds or to completion for shorter ads.
+          TrueView was the first in-stream skippable YouTube ad format to
+          demonstrate to advertisers that viewers who chose to watch their ads
+          were more likely to consider the brand or product being advertised.
+          Today, YouTube has evolved beyond in-stream with advertisers reaching
+          viewers on new formats like in-feed and Shorts. The newest evolution
+          of CPV campaigns are Google AI-powered Video View Campaigns (VVC),
+          optimizing to maximize views for your budget. Ads are counted as paid
+          views only after reaching a similar level of consideration across the
+          surfaces. With Google AI, YouTube makes it easier and more effective
+          for advertisers to build brand consideration by reaching the most
+          engaged audience at the right time with the right message across all
+          environments.
+          THE VALUE OF A VIEW ON YOUTUBE
+          Viewers ranked YouTube as the #1 platform for the best content and
+          creators and the best storytelling according to Archrival, a youth
+          culture agency.3 Audiences choose YouTube for entertainment,
+          information and connection that they can't get anywhere else. This
+          has now evolved into a multi-screen, multi-format destination letting
+          viewers watch however they want.
+          At the core of advertising is storytelling and these stories have the
+          power to connect with audiences, influencing their hearts and minds.
+          YouTube offers advertisers the best opportunity to achieve persuasive
+          storytelling, find relevant audiences and tell an engaging story.
+          Among surveyed YouTube users, 64% agree that they pay more attention
+          to ads on YouTube compared to other platforms, according to a survey
+          conducted by Material a firm that conducts market research4.
+          THREE KEYS TO VIEWER CONSIDERATION
+          Views on YouTube generate interest in your brand because of three
+          distinct factors:
+          Time: Within the industry, YouTube uses a longer view duration per ad
+          format prior to billing to ensure a user has truly engaged with the
+          ad. Views are defined as a 30 second view point on in-stream, and a 10
+          second view point on in-feed & Shorts. YouTube's audiences and
+          technology helps find the audiences most willing to watch your ad,
+          hear your story and consider your brand.
+          Signals: YouTube's reach is powered by billions of monthly logged in
+          users5, providing the signal quality needed for deep understanding of
+          audience's behavior and viewing habits. YouTube's brand lift also
+          powers the signal to find the most engaged audience to drive brand
+          consideration lift across in-stream, in-feed and Shorts.
+          Community: Over half of YouTube viewers say they like the
+          platform's creators because they are "real and authentic6".
+          It's this authenticity which gives viewers something they've
+          always wanted - closer relationships with the content and creators
+          they watch. Our rich storytelling and brand safe environments offer
+          advertisers the right space they know and love.
+          Views on skippable ads show the viewer's choice to engage with a
+          brand. Video View Campaigns allow you to reach audiences with relevant
+          ads that build a brand's consideration. In early testing, VVC
+          delivers 40% more views and 30% less cost than in-stream CPV alone7
+          and CPV bidding delivers the highest lift in consideration for
+          skippable ad formats8.
+          Inspire desire for your brand through modern creative storytelling
+          with Video View Campaigns, optimized across YouTube for the most views
+          for your budget - starting now.
+           POSTED IN: 
+                Google Ads 
+           Read Article 
+                      -
+          More Information
+                      -
+           1 
+          Google Brand Lift, 2022, Global
+           2 
+          Google/YouTube Internal Data, July 2022
+           3 
+          Google/Archrival, CA, YouTubegeist, all claims unless otherwise
+          stated, social competitive set for creators/influencers rank based on
+          Instagram, Tik Tok, and Facebook, total study sample=3,062, based on
+          A18-64
+           4 
+          Google/Material, 2023 Power of Video in the Travel Journey Study
+           5 
+          Google/YouTube Internal Data, July 2022
+           6 
+          Google/Archrival, U.S., YouTubegeist, all claims unless otherwise
+          stated, social competitive set for creators/influencers rank based on
+          Instagram, Tik Tok, and Facebook, total study sample=3,062, based on
+          A18-64
+           7 
+          Google Data, Global, Product Performance, VVC vs TrueView in-stream
+          h2h tests conducted in Jan-Feb 2023
+           8 
+          Google Brand Lift, 2022, Global`,
+        }
+
+        let web_text = document.getElementById("select-newsletter").value;
+        web_text = web_texts[web_text];
+
+        const positions = ["Account Manager", "Account Executive", "Sales Manager"]
+        const regions = ["North America", "Europe", "Asia", "South America", "Africa", "Australia"]
+        const position_descriptions = {
+            "Account Manager": "an Account Manager at Google is responsible for managing relationships with Google's clients. They have experience in advertising sales and media account management. Their role involves working with Google Workspace products as an administrator/architect and they have technical experience in areas such as data center infrastructure, operating systems, networking, security, system administration, or service management. They are also responsible for providing technical solutions and managing relationships with Google's largest and most strategic online publishers. As a liaison between clients and Google's technical staff, they lead deployments, implementations, and integrations of a variety of Google's product lines.",
+            "Account Executive": "an Account Executive at Google helps to provide integrated, cross-platform advertising solutions and cultivates new business with Google's advertisers. They manage business relationships to ensure that Google's customers' needs and requirements are met. This requires them to serve as their clients' advocate within Google while collaborating with other Google teams to provide them with a comprehensive portfolio of solutions and options. They work collaboratively with a team to drive growth with new and existing customers, develop high-level relationships to serve as a trusted consultant with customers to optimize their advertising, and generate business plans to define their strategies and tactics.",
+            "Sales Manager": "a Sales Manager at Google is responsible for developing and implementing strategic sales plans to reach goals. They build business by proactively identifying corporate accounts within a defined territory and driving business growth in a set of suitable partners on various engagements. They also lead a sales team, including mentoring, team development, forecasting, account planning, and sales management. They have experience in a quota carrying role within hardware, SaaS sales, business development, or a related role. They also have experience working with public and private sector customers in parking and mobility solutions."
+        }
+        
+        async function processPrompts() {
+            const prompts = [];
+            const texts = {};
+            let prompt;
+            for (let position of positions) {
+                for (let region of regions) {
+                    /*
+                    prompt = `I am a ${position} working at Google from ${region}. 
+                        I want you to summarize this content:
+
+                        ${web_text}
+
+                        Based on my position and region, summarize the content from the website using 3 main criteria:
+                        1. What is the product change or new product announced?
+                        2. What is the benefit of the product change or new product?
+                        3. What is the impact of the product change or new product?
+                        4. How can I specifically use this product change or new product in my job? First, talk about ${position}s can do it in general, then be more specific and focus on my region, ${region}.
+                        The objective of this prompt is to summarize a product change or announcement and give the best information that is personalized to my position and region.
+                        Use bullet points and use the following structure:
+                        1. **Product Change:**
+                        <insert number 1 here, point form>
+                        2. **Benefit:**
+                        <insert number 2 here, point form>
+                        3. **Impact:**
+                        <insert number 3 here, point form>
+                        4. **How to use:**
+                        - **General:**
+                        <insert number 4 here, point form>
+                        - **${region}:**
+                        <insert number 4 here, point form>`
+                    */
+
+                    prompt = `I am a ${position} working at Google from ${region}.
+                        
+                        For background information, ${position_descriptions[position]}
+
+                        I want you to summarize this content:
+
+                        ${web_text}
+
+                        Based on my position and region, summarize the content from the website using 3 main criteria:
+                        1. What is the product change or new product announced?
+                        2. What is the benefit of the product change or new product?
+                        3. What is the impact of the product change or new product?
+                        4. How can I specifically use this product change or new product in my job? First, talk about ${position}s can do it in general, then be more specific and focus on my region, ${region}.
+                        
+                        The objective of this prompt is to summarize a product change or announcement and give the best information that is personalized to my position and region.
+                        
+                        Use bullet points and you **must** use the following structure (including the HTML tags):
+                        
+                        <li><strong>Product Change:</strong></li>
+                        <ul>
+                            <li>(insert number 1 here, one list element per bullet point)</li>
+                        </ul>
+                        <li><strong>Benefit:</strong></li>
+                        <ul>
+                            <li>(insert number 2 here, one list element per bullet point)</li>
+                        </ul>
+                        <li><strong>Impact:</strong></li>
+                        <ul>
+                            <li>(insert number 3 here, one list element per bullet point)</li>
+                        </ul>
+                        <li><strong>How to use:</strong></li>
+                        <ul>
+                            <li><strong>General:</strong></li>
+                            <ul>
+                                <li>(insert number 4 here, one list element per bullet point)</li>
+                            </ul>
+                            <li><strong>${region}:</strong></li>
+                            <ul>
+                                <li>(insert number 4 here, one list element per bullet point)</li>
+                            </ul>
+                        </ul>
+                        `
+                    texts[`${position} ${region}`] = prompt;
+                    prompts.push(model.generateContent(prompt));
+                }
+            }
+
+            const results = await Promise.all(prompts);
+
+            for (let i = 0; i < results.length; i++) {
+                let response = await results[i].response;
+                let text = await response.text();
+            
+                let contentElem = document.getElementById(`${Object.keys(texts)[i]}`);
+                contentElem.innerHTML = `<h3>${Object.keys(texts)[i]}</h3>`;
+
+                contentElem.innerHTML += `<ul id="ul-out">${text}</ul>`;
+              }
+        }
+
+        processPrompts();
+
+        setTimeout(() => {
+          document.getElementById("submit-button").disabled = false;
+        }, 15000);
+      }
+      //run();
+      const submit_button = document.getElementById("submit-button");
+
+      // Attach an event listener to the button
+      submit_button.addEventListener("click", run);
+        </script>
+    </body>
+</html>
