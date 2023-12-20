@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Google Generative AI</title>
+        <title>Gemini Prototype</title>
         <style>
             body {
                 font-family: sans-serif;
@@ -47,6 +47,23 @@
             }
             #ul-out {
                 margin: auto 0em;
+            }
+
+            textarea {
+                font-family: sans-serif;
+                font-size: 16px;
+                width: calc(100% - 75px);
+                height: 2em;
+            }
+            .pos-submit {
+                width: 60px;
+                height: 2em;
+            }
+            .convo {
+                margin-top: 1em;
+            }
+            .disabled-button {
+                cursor: not-allowed;
             }
         </style>
     </head>
@@ -168,6 +185,17 @@
             </div>
         </div>
         <script>
+            function setupSessionStorage() {
+                const positions = ["Account Manager", "Account Executive", "Sales Manager"]
+                const regions = ["North America", "Europe", "Asia", "Latin America", "South America", "Africa", "Australia"]
+                for (let position of positions) {
+                    for (let region of regions) {
+                        if (!sessionStorage.getItem(`${position} ${region}`)) {
+                            sessionStorage.setItem(`${position} ${region}`, "");
+                        }
+                    }
+                }
+            }
             function selectEmployee() {
                 let value = document.getElementById("select-employee").value;
                 let cards = [...document.getElementById("content").children];
@@ -180,6 +208,7 @@
                     });
                 document.getElementById("submit").classList.remove("hidden");
             }
+            setupSessionStorage();
             selectEmployee();
         </script>
         <script type="module">
@@ -197,6 +226,35 @@
 
         // For text-only input, use the gemini-pro model
         const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+
+        async function reply() {
+            // this.id = "submit blah blah blah"
+            this.classList.add("disabled-button");
+            const ID = this.id.split(" ").slice(1).join(" ");
+            const chat = JSON.parse(sessionStorage.getItem(ID));
+            const text = document.getElementById(`respond ${ID}`).value;
+            const continue_chat = model.startChat({history: chat});
+            const result = await continue_chat.sendMessage(text);
+            const response = await result.response;
+            const response_text = response.text();
+            sessionStorage.setItem(ID, JSON.stringify(continue_chat._history));
+
+            let contentElem = document.getElementById(`${ID}`);
+            contentElem.childNodes[contentElem.childNodes.length - 1].remove();
+            contentElem.innerHTML += `<br><p><strong>User:</strong> ${text}</p>`;
+            contentElem.innerHTML += `<p><strong>AI:</strong> ${response_text.replace(/\n/g, "<br>").replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")}</p>`;
+            contentElem.innerHTML += `<div id="input ${ID}" class="convo">
+                <textarea id="respond ${ID}"></textarea>
+                <input
+                    type="button"
+                    value="Submit"
+                    id="submit ${ID}"
+                    class="pos-submit"
+                >`;
+            const submit_button = document.getElementById(this.id);
+            submit_button.addEventListener("click", reply);
+        }
+
 
         const web_texts = {
             "More effective media buying on apps | May 01, 2023": `Ads & Commerce Blog 
@@ -508,6 +566,7 @@
         async function processPrompts() {
             const prompts = [];
             const texts = {};
+            const chats = {};
             let prompt;
             for (let position of positions) {
                 for (let region of regions) {
@@ -580,7 +639,10 @@
                         </ul>
                         `
                     texts[`${position} ${region}`] = prompt;
-                    prompts.push(model.generateContent(prompt));
+                    const chat = model.startChat({history: []})
+                    //prompts.push(model.generateContent(prompt));
+                    prompts.push(chat.sendMessage(prompt));
+                    chats[`${position} ${region}`] = chat;
                 }
             }
 
@@ -589,12 +651,31 @@
             for (let i = 0; i < results.length; i++) {
                 let response = await results[i].response;
                 let text = await response.text();
+                let chat = chats[`${Object.keys(texts)[i]}`];
+
+                sessionStorage.setItem(`${Object.keys(texts)[i]}`, JSON.stringify(chat._history));
             
                 let contentElem = document.getElementById(`${Object.keys(texts)[i]}`);
                 contentElem.innerHTML = `<h3>${Object.keys(texts)[i]}</h3>`;
 
                 contentElem.innerHTML += `<ul id="ul-out">${text}</ul>`;
+
+                // new
+                contentElem.innerHTML += `<div id="input ${Object.keys(texts)[i]}" class="convo">
+                    <textarea id="respond ${Object.keys(texts)[i]}"></textarea>
+                    <input
+                        type="button"
+                        value="Submit"
+                        id="submit ${Object.keys(texts)[i]}"
+                        class="pos-submit"
+                    >
+                </div>`;
               }
+            const submit_buttons = document.getElementsByClassName("pos-submit");
+            for (let button of submit_buttons) {
+                button.addEventListener("click", reply);
+            }
+            
         }
 
         processPrompts();
