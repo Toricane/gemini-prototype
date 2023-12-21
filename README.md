@@ -9,7 +9,7 @@ This is a prototype of a proof of concept for a recommendation to Google. It is 
 1. Create or open a project in [Google Cloud](https://console.cloud.google.com/)
 2. Enable the [Generative Language API](https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com/)
 3. Create credentials and copy the API key
-4. Add your API key in the `index.html` file, when the `API_KEY` variable is declared
+4. Add your API key in the `index.html` file, where the `API_KEY` variable is declared
 5. Open the `index.html` file in your browser
 
 ## Using the program
